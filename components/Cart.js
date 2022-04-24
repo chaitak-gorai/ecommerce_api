@@ -3,13 +3,16 @@ import Link from 'next/link';
 import {
   AiOutlineMinus,
   AiOutlinePlus,
-  AiOutlineShoppingCart,
   AiOutlineLeft,
+  AiOutlineShopping,
 } from 'react-icons/ai';
 import { TiDeleteOutline } from 'react-icons/ti';
 import toast from 'react-hot-toast';
+
 import { useStateContext } from '../context/StateContext';
 import { urlFor } from '../lib/client';
+import getStripe from '../lib/getStripe';
+
 const Cart = () => {
   const cartRef = useRef();
   const {
@@ -20,6 +23,36 @@ const Cart = () => {
     toggleCartItemQuantity,
     onRemove,
   } = useStateContext();
+
+  const handleCheckout = async () => {
+    const stripe = await getStripe();
+
+    const response = await fetch('/api/stripe', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(cartItems),
+    });
+    // const cart = cartItems;
+    // const response = await fetch('/api/stripe', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: {
+    //     cart: JSON.stringify(cart),
+    //   },
+    // });
+    if (response.statusCode === 500) return;
+
+    const data = await response.json();
+    console.log(data);
+    toast.loading('Redirecting...');
+
+    stripe.redirectToCheckout({ sessionId: data.id });
+  };
+
   return (
     <div className='cart-wrapper' ref={cartRef}>
       <div className='cart-container'>
@@ -30,23 +63,25 @@ const Cart = () => {
         >
           <AiOutlineLeft />
           <span className='heading'>Your Cart</span>
-          <span className='cart-num-items'>{totalQuantities} items</span>
+          <span className='cart-num-items'>({totalQuantities} items)</span>
         </button>
+
         {cartItems.length < 1 && (
           <div className='empty-cart'>
-            <AiOutlineShoppingCart size={150} />
-            <h1>Your cart is empty</h1>
+            <AiOutlineShopping size={150} />
+            <h3>Your shopping bag is empty</h3>
             <Link href='/'>
               <button
                 type='button'
-                className='btn'
                 onClick={() => setShowCart(false)}
+                className='btn'
               >
                 Continue Shopping
               </button>
             </Link>
           </div>
         )}
+
         <div className='product-container'>
           {cartItems.length >= 1 &&
             cartItems.map((item) => (
@@ -58,7 +93,7 @@ const Cart = () => {
                 <div className='item-desc'>
                   <div className='flex top'>
                     <h5>{item.name}</h5>
-                    <h4>{item.price}</h4>
+                    <h4>${item.price}</h4>
                   </div>
                   <div className='flex bottom'>
                     <div>
@@ -71,7 +106,9 @@ const Cart = () => {
                         >
                           <AiOutlineMinus />
                         </span>
-                        <span className='num'>{item.quantity}</span>
+                        <span className='num' onClick=''>
+                          {item.quantity}
+                        </span>
                         <span
                           className='plus'
                           onClick={() =>
@@ -85,9 +122,7 @@ const Cart = () => {
                     <button
                       type='button'
                       className='remove-item'
-                      onClick={() => {
-                        onRemove(item._id);
-                      }}
+                      onClick={() => onRemove(item)}
                     >
                       <TiDeleteOutline />
                     </button>
@@ -99,12 +134,12 @@ const Cart = () => {
         {cartItems.length >= 1 && (
           <div className='cart-bottom'>
             <div className='total'>
-              <h3>Subtotal</h3>
+              <h3>Subtotal:</h3>
               <h3>${totalPrice}</h3>
             </div>
             <div className='btn-container'>
-              <button type='button' className='btn' onClick=''>
-                Pay With Stripe
+              <button type='button' className='btn' onClick={handleCheckout}>
+                Pay with Stripe
               </button>
             </div>
           </div>
