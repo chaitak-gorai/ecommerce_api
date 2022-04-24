@@ -10,8 +10,12 @@ import { Product } from '../../components';
 import { useStateContext } from '../../context/StateContext';
 const ProductDetails = ({ product, products }) => {
   const { image, name, details, price } = product;
-  const { decQty, incQty, qty, onAdd } = useStateContext();
+  const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
   const [index, setIndex] = React.useState(0);
+  const handleBuyNow = () => {
+    onAdd(product, qty);
+    setShowCart(true);
+  };
   return (
     <div>
       <div className='product-detail-container'>
@@ -56,9 +60,7 @@ const ProductDetails = ({ product, products }) => {
               <span className='minus' onClick={decQty}>
                 <AiOutlineMinus />
               </span>
-              <span className='num' onClick=''>
-                {qty}
-              </span>
+              <span className='num'>{qty}</span>
               <span className='plus' onClick={incQty}>
                 <AiOutlinePlus />
               </span>
@@ -74,7 +76,7 @@ const ProductDetails = ({ product, products }) => {
             >
               Add to cart
             </button>
-            <button type='button' className='buy-now'>
+            <button type='button' className='buy-now' onClick={handleBuyNow}>
               Buy Now
             </button>
           </div>
