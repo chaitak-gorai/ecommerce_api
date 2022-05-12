@@ -9,7 +9,9 @@ import {
 import { Product } from '../../components';
 import { useStateContext } from '../../context/StateContext';
 const ProductDetails = ({ product, products }) => {
-  const { image, name, details, price } = product;
+  const { itemId, itemName, itemDescription, itemPrice, itemPhoto2 } = product;
+  console.log(product);
+  console.log(products);
   const { decQty, incQty, qty, onAdd, setShowCart } = useStateContext();
   const [index, setIndex] = React.useState(0);
   const handleBuyNow = () => {
@@ -21,26 +23,12 @@ const ProductDetails = ({ product, products }) => {
       <div className='product-detail-container'>
         <div>
           <div className='image-container'>
-            <img
-              src={urlFor(image && image[index])}
-              className='product-detail-image'
-            />
+            <img src={itemPhoto2} className='product-detail-image' />
           </div>
-          <div className='small-image-container'>
-            {image?.map((item, i) => (
-              <img
-                key={i}
-                src={urlFor(item)}
-                className={
-                  i === index ? 'small-image selected-image' : 'small-image'
-                }
-                onMouseEnter={() => setIndex(i)}
-              />
-            ))}
-          </div>
+          <div className='small-image-container'></div>
         </div>
         <div className='product-detail-desc'>
-          <h1> {name}</h1>
+          <h1> {itemName}</h1>
           <div className='reviews'>
             <div>
               <AiFillStar />
@@ -52,8 +40,8 @@ const ProductDetails = ({ product, products }) => {
             <p>(20)</p>
           </div>
           <h4> Details:</h4>
-          <p>{details} </p>
-          <p className='price'>${price}</p>
+          <p>{itemDescription} </p>
+          <p className='price'>${itemPrice}</p>
           <div className='quantity'>
             <h3>Quantity</h3>
             <p className='quantity-desc'>
@@ -96,15 +84,19 @@ const ProductDetails = ({ product, products }) => {
   );
 };
 export const getStaticPaths = async () => {
-  const query = `*[_type=="product"]{
-       slug{
-           current
-       }
-   }`;
-  const products = await client.fetch(query);
+  // const query = `*[_type=="product"]{
+  //      slug{
+  //          current
+  //      }
+  //  }`;
+  // const products = await client.fetch(query);
+  const response = await fetch(
+    'https://obscure-gorge-13406.herokuapp.com/items'
+  );
+  const products = await response.json();
   const paths = products.map((product) => ({
     params: {
-      slug: product.slug.current,
+      slug: product.itemId,
     },
   }));
   return {
@@ -113,12 +105,32 @@ export const getStaticPaths = async () => {
   };
 };
 export const getStaticProps = async ({ params: { slug } }) => {
-  const query = `*[_type=="product" && slug.current=="${slug}"][0]`;
-  const productsQuery = `*[_type=="product"]`;
-  const product = await client.fetch(query);
-  const products = await client.fetch(productsQuery);
-  const bannerQuery = '*[_type=="banner"]';
-  const bannerData = await client.fetch(bannerQuery);
+  // const query = `*[_type=="product" && slug.current=="${slug}"][0]`;
+  // const productsQuery = `*[_type=="product"]`;
+  // const product = await client.fetch(query);
+  // const products = await client.fetch(productsQuery);
+  // const bannerQuery = '*[_type=="banner"]';
+  // const bannerData = await client.fetch(bannerQuery);
+  const response = await fetch(
+    'https://obscure-gorge-13406.herokuapp.com/items'
+  );
+  const products = await response.json();
+
+  // const formData = new FormData();
+  // formData.append('itemId', slug);
+  const response2 = await fetch(
+    'https://obscure-gorge-13406.herokuapp.com/items/',
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: {
+        itemId: slug.current,
+      },
+    }
+  );
+  const product = await response2.json();
   return {
     props: {
       products,

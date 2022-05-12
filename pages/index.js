@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Product, FooterBanner, HeroBanner } from '../components/index';
 import { client } from '../lib/client';
-const Home = ({ products, bannerData }) => {
+const Home = ({ data, bannerData }) => {
+  // const [data, setData] = React.useState([]);
+  // useEffect(async () => {
+  //   const response = await fetch(
+  //     'https://obscure-gorge-13406.herokuapp.com/items'
+  //   );
+  //   const data2 = await response.json();
+  //   console.log(data2);
+  //   setData(data2);
+  // }, []);
+
   return (
     <div>
       <HeroBanner heroBanner={bannerData.length && bannerData[0]} />
@@ -10,7 +20,7 @@ const Home = ({ products, bannerData }) => {
         <p>Speakers of many variations</p>
       </div>
       <div className='products-container'>
-        {products?.map((product) => (
+        {data?.map((product) => (
           <Product key={product._id} product={product} />
         ))}
       </div>
@@ -23,9 +33,19 @@ export const getServerSideProps = async () => {
   const products = await client.fetch(query);
   const bannerQuery = '*[_type=="banner"]';
   const bannerData = await client.fetch(bannerQuery);
+  // return {
+  //   props: {
+  //     products,
+  //     bannerData,
+  //   },
+  // };
+  const response = await fetch(
+    'https://obscure-gorge-13406.herokuapp.com/items'
+  );
+  const data = await response.json();
   return {
     props: {
-      products,
+      data,
       bannerData,
     },
   };

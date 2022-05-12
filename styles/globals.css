@@ -749,3 +749,85 @@ span.text-red {
     margin: auto;
   }
 }
+.form-control {
+  margin: 1rem 0;
+}
+
+.form-control label,
+.form-control input,
+.form-control textarea {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.form-control input,
+.form-control textarea {
+  border: 1px solid #a1a1a1;
+  font: inherit;
+  border-radius: 2px;
+}
+
+.form-control input:focus,
+.form-control textarea:focus {
+  outline-color: #00695c;
+}
+.form-control input.invalid {
+  border-color: #e53935;
+}
+.btn {
+  display: inline-block;
+  padding: 0.25rem 1rem;
+  text-decoration: none;
+  font: inherit;
+  border: 1px solid #00695c;
+  color: #00695c;
+  background: white;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.btn:hover,
+.btn:active {
+  background-color: #00695c;
+  color: white;
+}
+
+.btn.danger {
+  color: red;
+  border-color: red;
+}
+
+.btn.danger:hover,
+.btn.danger:active {
+  background: red;
+  color: white;
+}
+main {
+  padding: 1rem;
+  margin: auto;
+}
+
+form {
+  display: inline;
+}
+
+.product-form {
+  width: 30rem;
+  max-width: 90%;
+  margin: auto;
+  display: block;
+}
+
+.centered {
+  text-align: center;
+}
+.card {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.26);
+  padding: 20px;
+  background-color: antiquewhite;
+}
+.right {
+  display: flex;
+  right: 0;
+}
